@@ -22,6 +22,7 @@ manager = pygame_gui.UIManager((800, 450), 'theme.json')
 manager_hybrid = pygame_gui.UIManager((800, 450), 'theme_1.json')
 manager_map = pygame_gui.UIManager((800, 450), 'theme2.json')
 manager_sat = pygame_gui.UIManager((800, 450), 'theme3.json')
+manager_del = pygame_gui.UIManager((800, 450), 'del_metka.json')
 # -------------------------
 #------------
 map_button = pygame_gui.elements.UIButton(
@@ -49,6 +50,11 @@ login_button = pygame_gui.elements.UIButton(
     relative_rect=pygame.Rect((0, 250), (200, 50)),
     text='',
     manager=manager)
+#------------
+del_button = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((0, 350), (100, 40)),
+    text='',
+    manager=manager_del)
 
 def get_coords():
     global schirota
@@ -74,8 +80,13 @@ def get_coords():
 
 
 def get_cart():
-    map_request = f"http://static-maps.yandex.ru/1.x/?ll={dolgota},{schirota}&size=600,450&spn={x_maschtab},{x_maschtab}&l={type_cart}&pt={dolgota_metki},{schirota_metki},flag"
-    response = requests.get(map_request)
+    if dolgota_metki != 'no' and schirota_metki != 'no':
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll={dolgota},{schirota}&size=600,450&spn={x_maschtab},{x_maschtab}&l={type_cart}&pt={dolgota_metki},{schirota_metki},flag"
+        response = requests.get(map_request)
+    else:
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll={dolgota},{schirota}&size=600,450&spn={x_maschtab},{x_maschtab}&l={type_cart}"
+        response = requests.get(map_request)
+
     if not response:
         print("Ошибка выполнения запроса:")
         print(map_request)
@@ -142,20 +153,26 @@ while running:
                     type_cart = 'sat'
                 elif event.ui_element == hyb_button:
                     type_cart = 'sat,skl'
+                elif event.ui_element == del_button:
+                    dolgota_metki = 'no'
+                    schirota_metki = 'no'
 
         manager.process_events(event)
         manager_hybrid.process_events(event)
         manager_map.process_events(event)
         manager_sat.process_events(event)
+        manager_del.process_events(event)
     manager.update(time_delta)
     manager_sat.update(time_delta)
     manager_map.update(time_delta)
     manager_hybrid.update(time_delta)
+    manager_del.update(time_delta)
     screen.blit(pygame.image.load(map_file), (200, 0))
     manager.draw_ui(screen)
     manager_sat.draw_ui(screen)
     manager_map.draw_ui(screen)
     manager_hybrid.draw_ui(screen)
+    manager_del.draw_ui(screen)
     pygame.display.update()
     pygame.display.flip()
 
