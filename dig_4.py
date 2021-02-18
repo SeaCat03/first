@@ -7,6 +7,7 @@ import pygame_gui
 pygame.init()
 geocoder_key = "40d1649f-0493-4b70-98ba-98533de7710b"
 schirota, dolgota = 51.558403, 46.038191
+schirota_metki, dolgota_metki = 51.558403, 46.038191
 x_maschtab = 0.01
 map_file = "map.png"
 running = True
@@ -52,6 +53,8 @@ login_button = pygame_gui.elements.UIButton(
 def get_coords():
     global schirota
     global dolgota
+    global schirota_metki
+    global dolgota_metki
     geo_req = 'http://geocode-maps.yandex.ru/1.x/'
     geo_param = {
         'apikey': geocoder_key,
@@ -63,6 +66,7 @@ def get_coords():
     data = json_data["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
     coord_adr = data["Point"]["pos"]
     dolgota, schirota = map(float, coord_adr.split(' '))
+    dolgota_metki, schirota_metki = map(float, coord_adr.split(' '))
 
     # Сюда можно добавить анализ ответа на ошибку
 
@@ -70,7 +74,7 @@ def get_coords():
 
 
 def get_cart():
-    map_request = f"http://static-maps.yandex.ru/1.x/?ll={dolgota},{schirota}&size=600,450&spn={x_maschtab},{x_maschtab}&l={type_cart}&pt={dolgota},{schirota},flag"
+    map_request = f"http://static-maps.yandex.ru/1.x/?ll={dolgota},{schirota}&size=600,450&spn={x_maschtab},{x_maschtab}&l={type_cart}&pt={dolgota_metki},{schirota_metki},flag"
     response = requests.get(map_request)
     if not response:
         print("Ошибка выполнения запроса:")
